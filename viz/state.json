@@ -1,19 +1,19 @@
 {
   "version": "0.0.1-pre-alpha",
-  "alive_since": "2026-05-22T16:40:34.681110+00:00",
-  "timestamp": "2026-05-22T16:40:37.495904+00:00",
-  "event_count": 343,
+  "alive_since": "2026-05-22T16:42:24.434662+00:00",
+  "timestamp": "2026-05-22T16:43:54.035595+00:00",
+  "event_count": 5359,
   "last_event_type": "reliability_sea",
-  "valence": -0.125,
+  "valence": -0.025,
   "valence_just_shifted": false,
   "arousal": 1.0,
-  "cognitive_load": 0.5238095238095238,
+  "cognitive_load": 0.30872680927290036,
   "attention": {
-    "x": 0.6380422,
-    "y": -0.5717782873359689
+    "x": 0.0,
+    "y": -0.0
   },
-  "workspace_items": 7,
-  "workspace_focus": "workspace_prediction_error",
+  "workspace_items": 0,
+  "workspace_focus": null,
   "metacognitive_reliability": 0.5,
   "body_activity": 0.0
 }

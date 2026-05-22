@@ -155,12 +155,13 @@ def main() -> None:
     args = parser.parse_args()
 
     if args.open:
-        url = f"file://{INDEX_HTML.resolve()}"
-        print(f"Opening {url}")
-        try:
-            webbrowser.open(url)
-        except Exception as exc:  # noqa: BLE001
-            print(f"  could not open: {exc}")
+        from examples._browser import open_html, print_open_instruction
+
+        ok, method = open_html(INDEX_HTML)
+        if ok:
+            print(f"Opening with {method}: file://{INDEX_HTML.resolve()}")
+        else:
+            print_open_instruction(INDEX_HTML)
         time.sleep(1.5)
 
     run_demo(args.duration, tick_interval=args.tick)
