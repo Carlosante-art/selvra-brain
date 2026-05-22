@@ -152,16 +152,13 @@ def main() -> None:
     parser.add_argument("--duration", type=int, default=90)
     parser.add_argument("--tick", type=float, default=0.4)
     parser.add_argument("--open", action="store_true", help="Öppna viz i browser")
+    parser.add_argument("--port", type=int, default=8765, help="HTTP-server port")
     args = parser.parse_args()
 
     if args.open:
-        from examples._browser import open_html, print_open_instruction
+        from examples._browser import open_viz_in_browser
 
-        ok, method = open_html(INDEX_HTML)
-        if ok:
-            print(f"Opening with {method}: file://{INDEX_HTML.resolve()}")
-        else:
-            print_open_instruction(INDEX_HTML)
+        open_viz_in_browser(VIZ_DIR, port=args.port)
         time.sleep(1.5)
 
     run_demo(args.duration, tick_interval=args.tick)

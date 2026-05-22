@@ -1,13 +1,13 @@
 {
   "version": "0.0.1-pre-alpha",
-  "alive_since": "2026-05-22T16:42:24.434662+00:00",
-  "timestamp": "2026-05-22T16:43:54.035595+00:00",
-  "event_count": 5359,
+  "alive_since": "2026-05-22T16:47:36.607022+00:00",
+  "timestamp": "2026-05-22T16:49:03.382620+00:00",
+  "event_count": 5191,
   "last_event_type": "reliability_sea",
-  "valence": -0.025,
+  "valence": -0.05,
   "valence_just_shifted": false,
   "arousal": 1.0,
-  "cognitive_load": 0.30872680927290036,
+  "cognitive_load": 0.34054737261995954,
   "attention": {
     "x": 0.0,
     "y": -0.0
