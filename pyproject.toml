@@ -1,0 +1,59 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "selvra-brain"
+version = "0.0.1-pre-alpha"
+description = "Research-prototyp för medvetande-arkitektur baserad på Butlin et al. 14 indikatorer"
+readme = "README.md"
+requires-python = ">=3.11"
+authors = [{ name = "Carl Karjalainen Joels" }]
+license = { text = "Proprietary — research, not for redistribution yet" }
+dependencies = [
+    # Initialt minimalt. Tilläggs när varje fas kräver.
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "pytest-asyncio>=0.23",
+    "ruff>=0.6",
+    "mypy>=1.10",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = [
+    "E",      # pycodestyle
+    "F",      # pyflakes
+    "I",      # isort
+    "B",      # flake8-bugbear
+    "UP",     # pyupgrade
+    "RUF",    # ruff-specific
+]
+ignore = [
+    "E501",   # line-length — ruff format hanterar
+]
+
+[tool.ruff.format]
+quote-style = "double"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+addopts = "-ra --strict-markers"
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+warn_unused_configs = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+no_implicit_optional = true
