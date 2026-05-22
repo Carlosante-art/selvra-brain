@@ -80,6 +80,38 @@ Se [`docs/ROADMAP.md`](docs/ROADMAP.md). Sammanfattning:
 
 ## Status
 
-Initial scaffold, 2026-05-22. Inget körbart än. Se
-[`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) och
-[`docs/ROADMAP.md`](docs/ROADMAP.md).
+Fas 1 körbar (2026-05-22). 6 av 14 Butlin-indikatorer embryonalt på
+plats (PP-1, GW-1..4, HOT-2) + Damasio-valens som baseline. Se
+[`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) för indikator-tablå
+och [`docs/ROADMAP.md`](docs/ROADMAP.md) för fas-plan.
+
+## Kör
+
+Selvra-brain har inga externa dependencies — bara Python 3.11+ standard
+library. För att köra demonen:
+
+```bash
+# 1. Öppna ansiktet i browsern
+# (eller låt --open göra det åt dig)
+xdg-open viz/index.html  # eller dubbel-klicka i filhanteraren
+
+# 2. I terminal: kör demo
+python3 -m examples.alive_world --duration 90 --open
+```
+
+Tre demos finns:
+- `examples.face_alive` — Fas 0, syntetiska events över olika faser
+- `examples.predictive_face` — PP-1 isolerat, sinus + spikes
+- `examples.alive_world` — full Fas 1, Selvra i SymbolWorld
+
+Tester (kräver `pip install pytest`):
+
+```bash
+python3 -m pytest tests/
+```
+
+På Ubuntu/Debian utan pytest installerat — installera först:
+
+```bash
+sudo apt install python3-pytest python3-venv  # eller pip install --user pytest
+```

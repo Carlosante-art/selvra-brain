@@ -27,10 +27,9 @@ attention-bottleneck per GW-2.
 
 from __future__ import annotations
 
+import logging
 from collections.abc import Callable
 from typing import Any
-
-import structlog
 
 from selvra_brain.core.epistemic import (
     Confidence,
@@ -49,7 +48,7 @@ from selvra_brain.workspace.types import (
     WorkspaceSource,
 )
 
-logger = structlog.get_logger(__name__) if hasattr(structlog, "get_logger") else None
+logger = logging.getLogger(__name__)
 
 
 BroadcastSubscriber = Callable[[BroadcastSignal], None]
@@ -99,8 +98,7 @@ class GlobalWorkspace:
                 sub(signal)
             except Exception as exc:  # noqa: BLE001
                 # En subscribers fel ska inte stoppa de andra
-                if logger:
-                    logger.warning("broadcast_subscriber_failed", error=str(exc))
+                logger.warning("broadcast_subscriber_failed: %s", exc)
 
     # ─── Attention-selection (GW-4) ────────────────────────────
 

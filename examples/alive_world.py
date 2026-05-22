@@ -23,7 +23,7 @@ Vad du ska SE i ansiktet:
   - Andning fortsätter alltid
 
 Kör:
-    python -m examples.alive_world --duration 90 --open
+    python3 -m examples.alive_world --duration 90 --open
 """
 
 from __future__ import annotations

@@ -1,7 +1,7 @@
 """Demo: visa Selvra-ansiktet "leva" genom syntetiska events.
 
 Kör:
-    python -m examples.face_alive [--duration 60]
+    python3 -m examples.face_alive [--duration 60]
 
 Vad det gör:
 1. Skapar en EventStore

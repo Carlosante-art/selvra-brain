@@ -5,7 +5,7 @@ HierarchicalPredictiveEngine lär sig sinus-mönstret över tid (errors
 sjunker) men reagerar starkt på spikes (pupill-dilation).
 
 Kör:
-    python -m examples.predictive_face [--duration 90] [--open]
+    python3 -m examples.predictive_face [--duration 90] [--open]
 
 Vad du ska se i ansiktet:
 - Period 1 (0-25s): "väcker" — pupiller reagerar på allt, hög load
