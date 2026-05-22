@@ -1,8 +1,8 @@
 # Architecture — Butlin et al. 14 indikatorer + utvidgningar
 
-**Datum:** 2026-05-22 (Fas 1g — 11 av 14 indikatorer embryonalt)
+**Datum:** 2026-05-22 (Fas 1h — Genome formaliserad)
 **Primary source:** [Butlin, Long, Bengio, Chalmers et al. 2023, uppdaterad 2025](https://arxiv.org/abs/2308.08708)
-**Status:** Fas 1 körbar — PP-1 + GW-1..4 + HOT-2 + RPT-1/2 + AE-1/2 + AST-1.
+**Status:** Fas 1 körbar — PP-1 + GW-1..4 + HOT-2 + RPT-1/2 + AE-1/2 + AST-1 + Genome-DNA.
 
 ---
 
@@ -76,6 +76,30 @@ Människohjärnan löser det genom interocepting + propriocepting.
 "self-signals" (intern state: energi, attention-resurser,
 prediction-error-volym) annorlunda än "environment-signals" (input
 från sensors). Boundary är arkitektur, inte feature.
+
+### Genome / DNA-formalisering (Fas 1h)
+
+**Inspiration:** Carls Selvra-brain ROADMAP Fas 2-3 (Adam + barn).
+
+Per architectural decision 2026-05-22: agentens konfiguration är
+formaliserad som `Genome` — frozen dataclass med 16 parametrar fördelade
+över modulerna (perception, prediction, workspace, metacognition,
+curiosity, action_model, attention_schema).
+
+Två lager-separation:
+- **Genome** = nature. Immutable under agentens livstid. Sätter
+  möjligheter.
+- **EventStore** = nurture. Append-only biografi. Sätter realiseringar.
+
+Detta är arkitekturen som möjliggör Fas 2 (Adam = annan Genome) och
+Fas 3 (barn = recombine + mutate). Två agenter med IDENTISK Genome
+men olika EventStores blir olika "personligheter" — vilket är vad
+empirisk personlighets-forskning rapporterar för enäggstvillingar.
+
+**Implementation:** `src/selvra_brain/genome/`. `build_brain_from_genome()`
+är factory som instantierar alla moduler. `agent_born`-event refererar
+till `genome_id`. Demo: `examples/genome_demo.py` jämför två genomer i
+samma värld.
 
 ### Wegner-Pennartz-kritiken
 

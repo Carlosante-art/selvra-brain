@@ -82,9 +82,9 @@ Se [`docs/ROADMAP.md`](docs/ROADMAP.md). Sammanfattning:
 
 Fas 1 körbar (2026-05-22). 11 av 14 Butlin-indikatorer embryonalt på
 plats: PP-1, GW-1..4, HOT-2, RPT-1, RPT-2, AE-1, AE-2, AST-1 + Damasio-
-valens som baseline. Återstår HOT-1, HOT-3, HOT-4. Se
-[`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) för indikator-tablå
-och [`docs/ROADMAP.md`](docs/ROADMAP.md) för fas-plan.
+valens som baseline + Genome-DNA formaliserad (Fas 1h, möjliggör Fas 2-3).
+Återstår HOT-1, HOT-3, HOT-4. Se [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)
+för indikator-tablå och [`docs/ROADMAP.md`](docs/ROADMAP.md) för fas-plan.
 
 ## Kör
 
@@ -100,11 +100,12 @@ xdg-open viz/index.html  # eller dubbel-klicka i filhanteraren
 python3 -m examples.alive_world --duration 90 --open
 ```
 
-Fyra demos finns:
+Fem demos finns:
 - `examples.face_alive` — Fas 0, syntetiska events över olika faser
 - `examples.predictive_face` — PP-1 isolerat, sinus + spikes
 - `examples.alive_world` — Fas 1, Selvra i SymbolWorld med broadcast-driven blick
-- `examples.curious_world` — Fas 1g, Selvra med autonom curiosity-driven action + RPT + AE-1/2 + AST-1
+- `examples.curious_world` — Fas 1g, autonom curiosity-driven action + RPT + AE-1/2 + AST-1
+- `examples.genome_demo` — Fas 1h, två Genome i samma värld → olika beteende
 
 Tester (kräver `pip install pytest`):
 
