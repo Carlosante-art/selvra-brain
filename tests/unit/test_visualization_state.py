@@ -153,16 +153,43 @@ def test_derive_workspace_items() -> None:
     assert state.workspace_focus == "focus_a"
 
 
-def test_derive_cognitive_load_from_prediction_errors() -> None:
-    """Andel PREDICTION_ERROR-events bland senaste = cognitive_load."""
+def test_derive_cognitive_load_legacy_fallback_uses_proportion() -> None:
+    """Legacy events utan magnitude → fallback till andel."""
     store = EventStore()
-    # 3 normala + 2 prediction-error → 2/5 = 0.4
     for _ in range(3):
         store.append(BrainEvent(category=EventCategory.PERCEPTION, tag=_tag()))
     for _ in range(2):
         store.append(BrainEvent(category=EventCategory.PREDICTION_ERROR, tag=_tag()))
     state = derive_state_from_store(store)
+    # Fallback: 2/5 = 0.4
     assert abs(state.cognitive_load - 0.4) < 0.01
+
+
+def test_derive_cognitive_load_uses_normalized_magnitude_when_present() -> None:
+    """PP-1 events har normalized_magnitude → MAX används (senaste/största
+    spike driver pupill-dilation, inte snittas bort)."""
+    store = EventStore()
+    store.append(BrainEvent(category=EventCategory.PERCEPTION, tag=_tag()))
+    store.append(BrainEvent(
+        category=EventCategory.PREDICTION_ERROR,
+        payload={"normalized_magnitude": 0.3, "magnitude": 0.5},
+        tag=_tag(),
+    ))
+    store.append(BrainEvent(
+        category=EventCategory.PREDICTION_ERROR,
+        payload={"normalized_magnitude": 0.85, "magnitude": 5.0},
+        tag=_tag(),
+    ))
+    state = derive_state_from_store(store)
+    assert state.cognitive_load == 0.85
+
+
+def test_derive_cognitive_load_zero_without_errors() -> None:
+    store = EventStore()
+    for _ in range(3):
+        store.append(BrainEvent(category=EventCategory.PERCEPTION, tag=_tag()))
+    state = derive_state_from_store(store)
+    assert state.cognitive_load == 0.0
 
 
 def test_derive_last_event_type() -> None:

@@ -139,9 +139,30 @@ def derive_state_from_store(
     recent_minute = sum(1 for e in all_events if (now - e.created_at).total_seconds() < 60)
     arousal = min(1.0, recent_minute / 30.0)
 
-    # ─── Cognitive load: prediction-error-events andel av recent ─
+    # ─── Cognitive load: magnitude-aware ───────────────────────
+    # När PP-1 är aktiv läser vi normalized_magnitude direkt från
+    # event-payload (sätts av HierarchicalPredictiveEngine). Detta är
+    # mer signal-troget än bara andelen events — magnitude SÄGER hur
+    # överraskad systemet är.
+    #
+    # Vi använder MAX av senaste fönstret (inte snitt) för att fånga
+    # sista surprise-spike — pupillen ska reagera DIREKT, inte
+    # genomsnitta över historik.
     pe_events = [e for e in recent if e.category == EventCategory.PREDICTION_ERROR]
-    cognitive_load = len(pe_events) / max(1, len(recent))
+    if pe_events:
+        # Föredra payload.normalized_magnitude (PP-1 producerar detta)
+        # Fallback: andel om payload saknas (legacy events från Fas 0)
+        magnitudes = []
+        for e in pe_events:
+            nm = e.payload.get("normalized_magnitude") if e.payload else None
+            if isinstance(nm, (int, float)):
+                magnitudes.append(float(nm))
+        if magnitudes:
+            cognitive_load = max(magnitudes)
+        else:
+            cognitive_load = len(pe_events) / max(1, len(recent))
+    else:
+        cognitive_load = 0.0
 
     # ─── Workspace: hur många WORKSPACE_ENTRY senaste 10 sec ─────
     ws_events = [
