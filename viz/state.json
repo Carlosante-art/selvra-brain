@@ -1,0 +1,19 @@
+{
+  "version": "0.0.1-pre-alpha",
+  "alive_since": "2026-05-22T15:53:05.403662+00:00",
+  "timestamp": "2026-05-22T15:53:07.806019+00:00",
+  "event_count": 5,
+  "last_event_type": "sensory_input_7",
+  "valence": 0.3,
+  "valence_just_shifted": false,
+  "arousal": 0.16666666666666666,
+  "cognitive_load": 0.0,
+  "attention": {
+    "x": 0.0,
+    "y": 0.0
+  },
+  "workspace_items": 0,
+  "workspace_focus": null,
+  "metacognitive_reliability": 0.5,
+  "body_activity": 0.0
+}
