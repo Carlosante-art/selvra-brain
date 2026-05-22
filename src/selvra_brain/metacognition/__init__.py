@@ -1,8 +1,18 @@
 """Higher-Order Theory modules.
 
-Implementerar (kommande):
-- HOT-1: Generativ top-down/noisy perception
+Implementerar:
 - HOT-2: Metakognitiv övervakning (reliability)
-- HOT-3: Agens med belief-formation + action-selection
-- HOT-4: Sparsam smidig kodning ("quality space")
+
+HOT-1, HOT-3, HOT-4 är ej implementerade i Fas 1.
+
+HOT-2-implementationen läser PredictiveEngine.L1-predictor (som
+predikterar L0-error magnitude) och jämför mot faktisk L0-error.
+Bra L1-kalibrering = hög reliability = stark aura i visualization.
 """
+
+from selvra_brain.metacognition.monitor import (
+    MetacognitiveMonitor,
+    ReliabilityAssessment,
+)
+
+__all__ = ["MetacognitiveMonitor", "ReliabilityAssessment"]

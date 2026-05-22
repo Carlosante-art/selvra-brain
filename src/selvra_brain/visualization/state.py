@@ -178,9 +178,21 @@ def derive_state_from_store(
     body_events = [e for e in recent if e.category == EventCategory.BODY_STATE]
     body_activity = len(body_events) / max(1, len(recent))
 
-    # ─── Attention vector — default centrerad tills GW är aktiv ──
-    # Senare: läs från workspace-modulens broadcast-target
+    # ─── Attention vector från senaste WORKSPACE_ENTRY ────────
+    # GW-3: senaste workspace-broadcast skickar attention_x/y i payload.
+    # Vi läser senaste eventet och låter det driva blickriktningen.
+    # Decay: om senaste workspace-event är gammalt → fade mot (0,0).
     attention = AttentionVector(x=0.0, y=0.0)
+    ws_event_list = [e for e in all_events if e.category == EventCategory.WORKSPACE_ENTRY]
+    if ws_event_list:
+        latest_ws = ws_event_list[-1]
+        ws_age_s = (now - latest_ws.created_at).total_seconds()
+        # Decay-faktor: 0s → 1.0 (full intensitet), 5s+ → 0.0
+        decay = max(0.0, 1.0 - ws_age_s / 5.0)
+        ax = latest_ws.payload.get("attention_x", 0.0) if latest_ws.payload else 0.0
+        ay = latest_ws.payload.get("attention_y", 0.0) if latest_ws.payload else 0.0
+        if isinstance(ax, (int, float)) and isinstance(ay, (int, float)):
+            attention = AttentionVector(x=ax * decay, y=ay * decay)
 
     return BrainVisualState(
         alive_since=alive_since,
