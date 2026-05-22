@@ -84,6 +84,25 @@ class BrainVisualState:
     # 0 = inert, 1 = aktiv kroppslig signalering
     body_activity: float = 0.0
 
+    # ─── Agency: drive + goal (AE-1 + AST-1) ─────────────────────
+    # drive_strength: 0 = idle drift, 1 = stark drift mot något
+    # current_goal: SELF_REPORTED goal-typ från CuriosityDriver
+    # current_target: object_id som AST-1 rapporterar
+    # attention_duration_ticks: hur länge attention varit på current_target
+    agentic_drive: float = 0.0
+    current_goal: str | None = None
+    current_target: str | None = None
+    attention_duration_ticks: int = 0
+
+    # ─── Action-effect-error (AE-2) ──────────────────────────────
+    # 0 = predictions match reality, 1 = stora avvikelser
+    action_effect_error: float = 0.0
+
+    # ─── Scene integration (RPT-2) ───────────────────────────────
+    # 0 = ingen recurrent förändring, 1 = stora skift i scen
+    recurrent_magnitude: float = 0.0
+    most_salient_source: str | None = None
+
     def to_dict(self) -> dict[str, Any]:
         d = asdict(self)
         # attention som nested dict — asdict klarar dataclasses men
@@ -178,6 +197,57 @@ def derive_state_from_store(
     body_events = [e for e in recent if e.category == EventCategory.BODY_STATE]
     body_activity = len(body_events) / max(1, len(recent))
 
+    # ─── Agency: senaste ACTION-event ────────────────────────────
+    agentic_drive = 0.0
+    current_goal: str | None = None
+    current_target: str | None = None
+    action_events = [e for e in all_events if e.category == EventCategory.ACTION]
+    if action_events:
+        latest_action = action_events[-1]
+        ev_age_s = (now - latest_action.created_at).total_seconds()
+        action_decay = max(0.0, 1.0 - ev_age_s / 8.0)
+        agentic_drive = (latest_action.payload.get("drive_strength", 0.0) or 0.0) * action_decay
+        current_goal = latest_action.payload.get("goal") if latest_action.payload else None
+        current_target = (
+            latest_action.payload.get("target_object_id") if latest_action.payload else None
+        )
+
+    # ─── AST-1 attention-schema duration ─────────────────────────
+    attention_duration_ticks = 0
+    schema_events = [
+        e
+        for e in all_events
+        if e.event_type == "attention_schema_report"
+    ]
+    if schema_events:
+        latest_schema = schema_events[-1]
+        attention_duration_ticks = int(
+            latest_schema.payload.get("duration_ticks", 0) or 0
+        )
+
+    # ─── AE-2 action-effect-error: senaste ──────────────────────
+    action_effect_error = 0.0
+    effect_events = [e for e in all_events if e.category == EventCategory.ACTION_EFFECT]
+    if effect_events:
+        latest_effect = effect_events[-1]
+        ev_age_s = (now - latest_effect.created_at).total_seconds()
+        effect_decay = max(0.0, 1.0 - ev_age_s / 6.0)
+        avg_err = latest_effect.payload.get("avg_error_magnitude", 0.0) or 0.0
+        action_effect_error = float(avg_err) * effect_decay
+
+    # ─── RPT-2 scene integration ─────────────────────────────────
+    recurrent_magnitude = 0.0
+    most_salient_source: str | None = None
+    scene_events = [e for e in all_events if e.event_type == "scene_integrated"]
+    if scene_events:
+        latest_scene = scene_events[-1]
+        ev_age_s = (now - latest_scene.created_at).total_seconds()
+        scene_decay = max(0.0, 1.0 - ev_age_s / 5.0)
+        rm = latest_scene.payload.get("recurrent_magnitude", 0.0) or 0.0
+        # Soft-cap till 1
+        recurrent_magnitude = float(rm) / (float(rm) + 5.0) * scene_decay
+        most_salient_source = latest_scene.payload.get("max_salience_source")
+
     # ─── Attention vector från senaste WORKSPACE_ENTRY ────────
     # GW-3: senaste workspace-broadcast skickar attention_x/y i payload.
     # Vi läser senaste eventet och låter det driva blickriktningen.
@@ -207,6 +277,13 @@ def derive_state_from_store(
         workspace_items=workspace_items,
         workspace_focus=workspace_focus,
         body_activity=body_activity,
+        agentic_drive=agentic_drive,
+        current_goal=current_goal,
+        current_target=current_target,
+        attention_duration_ticks=attention_duration_ticks,
+        action_effect_error=action_effect_error,
+        recurrent_magnitude=recurrent_magnitude,
+        most_salient_source=most_salient_source,
     )
 
 

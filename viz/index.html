@@ -55,6 +55,19 @@
       50%      { transform: scale(1.014); }
     }
 
+    /* ── Body-sway — agentic-drive ger subtle krops-rörelse.
+       Amplitud styrs av --sway-amp, period av --sway-period. */
+    .stage {
+      --sway-amp: 0px;
+      --sway-period: 5s;
+      animation: sway var(--sway-period) ease-in-out infinite;
+    }
+
+    @keyframes sway {
+      0%, 100% { transform: translateX(calc(var(--sway-amp) * -1)); }
+      50%      { transform: translateX(var(--sway-amp)); }
+    }
+
     /* ── Blink — random med JS, base via CSS ──────────────── */
     .eye-lid {
       transform-origin: center;
@@ -188,8 +201,12 @@
       <span id="t-events">events 0</span>·
       <span id="t-valence">val 0.00</span>·
       <span id="t-load">load 0.00</span>·
-      <span id="t-arousal">arousal 0.50</span>·
+      <span id="t-drive">drive 0.00</span>·
+      <span id="t-acterr">act_err 0.00</span>·
       <span id="t-state">—</span>
+    </div>
+    <div class="telemetry" style="bottom: -8px; font-size: 10px;">
+      <span id="t-goal">—</span>
     </div>
   </div>
 
@@ -301,12 +318,34 @@
         el.setAttribute('fill', skinColor)
       );
 
+      // ── Body-sway: agentic_drive → amplitud, recurrent_magnitude → period
+      const drive = clamp(s.agentic_drive || 0, 0, 1);
+      const rmag = clamp(s.recurrent_magnitude || 0, 0, 1);
+      const swayAmp = (drive * 4).toFixed(1);  // 0-4 px
+      const swayPeriod = (4.5 - rmag * 1.5).toFixed(2); // 4.5s när lugnt, 3s när aktivt
+      document.querySelector('.stage').style.setProperty('--sway-amp', `${swayAmp}px`);
+      document.querySelector('.stage').style.setProperty('--sway-period', `${swayPeriod}s`);
+
       // ── Telemetry text
+      const actErr = clamp(s.action_effect_error || 0, 0, 1);
       document.getElementById('t-events').textContent = `events ${s.event_count}`;
       document.getElementById('t-valence').textContent = `val ${v.toFixed(2)}`;
       document.getElementById('t-load').textContent = `load ${load.toFixed(2)}`;
-      document.getElementById('t-arousal').textContent = `arousal ${arousal.toFixed(2)}`;
+      document.getElementById('t-drive').textContent = `drive ${drive.toFixed(2)}`;
+      document.getElementById('t-acterr').textContent = `act_err ${actErr.toFixed(2)}`;
       document.getElementById('t-state').textContent = s.last_event_type || '—';
+
+      // ── Goal-rad
+      let goalText = '—';
+      if (s.current_goal && s.current_target) {
+        goalText = `${s.current_goal} · ${s.current_target}`;
+        if (s.attention_duration_ticks) {
+          goalText += ` (${s.attention_duration_ticks}t)`;
+        }
+      } else if (s.most_salient_source) {
+        goalText = `salient: ${s.most_salient_source}`;
+      }
+      document.getElementById('t-goal').textContent = goalText;
     }
 
     // ── Mix två hex-färger ──────────────────────────────────

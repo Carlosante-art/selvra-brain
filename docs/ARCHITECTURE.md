@@ -1,8 +1,8 @@
 # Architecture — Butlin et al. 14 indikatorer + utvidgningar
 
-**Datum:** 2026-05-22 (initial)
+**Datum:** 2026-05-22 (Fas 1g — 11 av 14 indikatorer embryonalt)
 **Primary source:** [Butlin, Long, Bengio, Chalmers et al. 2023, uppdaterad 2025](https://arxiv.org/abs/2308.08708)
-**Status:** Initial scaffold. Inga indikatorer fullt implementerade än.
+**Status:** Fas 1 körbar — PP-1 + GW-1..4 + HOT-2 + RPT-1/2 + AE-1/2 + AST-1.
 
 ---
 
@@ -18,35 +18,35 @@ Status-koder:
 
 | ID | Indikator | Status | Plan |
 |---|---|---|---|
-| RPT-1 | Input-moduler med algoritmisk återkoppling | 🔴 | `perception/` modul. Per-input recurrent connections, inte feedforward. |
-| RPT-2 | Input-moduler genererar organiserade, integrerade perceptuella representationer | 🔴 | Output från RPT-1 är inte rådata utan strukturerad represenation som binder samtidig multi-modal input. |
+| RPT-1 | Input-moduler med algoritmisk återkoppling | 🟡 | `perception/scene.py::PerceptionModule`. Previous scene blandas in i nuvarande via `smoothing_weight`. Recurrent magnitude mäts. |
+| RPT-2 | Input-moduler genererar organiserade, integrerade perceptuella representationer | 🟡 | `perception/scene.py::SceneRepresentation`. Samtidiga Observations binds till EN scene med per-objekt-features + salience-distribution + scene-level valens. |
 
 ### Global Workspace Theory (GWT)
 
 | ID | Indikator | Status | Plan |
 |---|---|---|---|
-| GW-1 | Multipla specialiserade system kapabla att operera parallellt (moduler) | 🔴 | `perception/` + `metacognition/` + `prediction/` + `affect/` ska köra parallellt, inte sekventiellt. asyncio + gather, eller multi-process. |
-| GW-2 | Begränsad kapacitet workspace, attention-flaskhals | 🔴 | `workspace/global_workspace.py` med fix bounded buffer. Endast N items kan vara i workspace samtidigt. |
-| GW-3 | Global broadcast — workspace gör information tillgänglig för alla moduler | 🔴 | Pub/sub-mekanism. När item kommer in i workspace, alla moduler får notifikation. |
-| GW-4 | Tillstånds-beroende attention för att styra workspace | 🔴 | `workspace/attention.py` med affektiv valens-modulering. Vad som hamnar i workspace beror på system-state, inte fix rule. |
+| GW-1 | Multipla specialiserade system kapabla att operera parallellt (moduler) | 🟡 | `perception` + `prediction` + `workspace` + `metacognition` + `agency` är diskreta moduler som orchestreras per tick. Inte processuell parallellism än — strukturell. |
+| GW-2 | Begränsad kapacitet workspace, attention-flaskhals | 🟡 | `workspace/global_workspace.py::GlobalWorkspace` med bounded buffer (default 5) + replace-lowest-saliency vid överskott. |
+| GW-3 | Global broadcast — workspace gör information tillgänglig för alla moduler | 🟡 | Pub/sub via `subscribe()`/`unsubscribe()`. Demo: blicken styrs av broadcasts (alive_world). |
+| GW-4 | Tillstånds-beroende attention för att styra workspace | 🟡 | `saliency = priority + 0.5 * |valence|` + state-dependent acceptance threshold. |
 
 ### Higher-Order Theories (HOT)
 
 | ID | Indikator | Status | Plan |
 |---|---|---|---|
 | HOT-1 | Generativ, top-down eller noisy perception-modul | 🔴 | LLM-call (Anthropic API) som verktyg för generativ representation. Inte själva arkitekturen — verktyg inom den. |
-| HOT-2 | Metakognitiv övervakning som skiljer pålitliga från opålitliga representationer | 🟡 | Selvras provenance + confidence-system är embryonalt detta. `metacognition/higher_order.py` ska utvidga. |
-| HOT-3 | Agens styrd av belief-formation och action-selection-system med metakognitiv uppdatering | 🟡 | Selvras hypothesis-engine ligger nära. `agency/active_inference.py` integrerar. |
+| HOT-2 | Metakognitiv övervakning som skiljer pålitliga från opålitliga representationer | 🟡 | `metacognition/monitor.py::MetacognitiveMonitor`. Per-source rolling reliability från L1-predictor-kalibrering. Global aggregate. |
+| HOT-3 | Agens styrd av belief-formation och action-selection-system med metakognitiv uppdatering | 🔴 | Embryonalt via AE-1 + HOT-2-koppling. Full HOT-3 kräver explicit belief-state + uppdaterings-policy. Senare fas. |
 | HOT-4 | Sparsam och smidig kodning som genererar "quality space" | 🔴 | Embedding-baserad representation där liknande tillstånd ligger nära varandra. Selvras event-store är diskret — vi behöver continuous parallellt. |
 
 ### Predictive Processing + Agency + Attention Schema
 
 | ID | Indikator | Status | Plan |
 |---|---|---|---|
-| PP-1 | Predictive coding på multipla nivåer | 🔴 | `prediction/predictive.py`. Per-källa prediktion + prediction-error som uppdaterar både input-modell och själva prediktionsmodellen. |
-| AE-1 | Agens med learning och flexibel målorientering | 🔴 | `agency/` modul. Inte hårdkodade mål. |
-| AE-2 | Embodiment — modell av output-effekter på environmental input | 🔴 | `body/` interocepting + propriocepting. Agentens egna handlingar ska påverka dess egen input på ett spårbart sätt. |
-| AST-1 | Attention schema — modell av processer som styr attention | 🔴 | `agency/attention_schema.py`. Inte bara prioritera data — representera HUR prioritering fungerar. |
+| PP-1 | Predictive coding på multipla nivåer | 🟡 | `prediction/engine.py::HierarchicalPredictiveEngine`. 2 nivåer (L0 raw + L1 meta-on-error). Per-source predictor-isolation. |
+| AE-1 | Agens med learning och flexibel målorientering | 🟡 | `agency/curiosity.py::CuriosityDriver`. 4 konkurrerande drives: REDUCE_UNCERTAINTY, INVESTIGATE_SURPRISE, EXPLORE_NEGLECTED, APPROACH/AVOID_VALENCE. Heuristisk balansering nu, learning-substrate finns. |
+| AE-2 | Embodiment — modell av output-effekter på environmental input | 🟡 | `agency/action_model.py::ActionEffectModel`. Predict per-source intensity efter look_at + observe actual + gradient-update av estimated_focus_width och periphery_intensity. |
+| AST-1 | Attention schema — modell av processer som styr attention | 🟡 | `agency/attention_schema.py::AttentionSchema`. Self-report över current_target + goal + duration + transitions_recent. Inhämtar från både ACTION-intents och workspace-broadcasts. |
 
 ---
 

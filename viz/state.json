@@ -1,19 +1,26 @@
 {
   "version": "0.0.1-pre-alpha",
-  "alive_since": "2026-05-22T16:47:36.607022+00:00",
-  "timestamp": "2026-05-22T16:49:03.382620+00:00",
-  "event_count": 5191,
-  "last_event_type": "reliability_sea",
-  "valence": -0.05,
+  "alive_since": "2026-05-22T17:04:37.498809+00:00",
+  "timestamp": "2026-05-22T17:04:42.474753+00:00",
+  "event_count": 1430,
+  "last_event_type": "attention_schema_report",
+  "valence": -0.125,
   "valence_just_shifted": false,
   "arousal": 1.0,
-  "cognitive_load": 0.34054737261995954,
+  "cognitive_load": 0.8616101018667269,
   "attention": {
-    "x": 0.0,
-    "y": -0.0
+    "x": 0.14667059999999998,
+    "y": -0.11950937777777776
   },
-  "workspace_items": 0,
-  "workspace_focus": null,
+  "workspace_items": 5,
+  "workspace_focus": "workspace_prediction_error",
   "metacognitive_reliability": 0.5,
-  "body_activity": 0.0
+  "body_activity": 0.0,
+  "agentic_drive": 0.5494188985148057,
+  "current_goal": "reduce_uncertainty",
+  "current_target": "sun",
+  "attention_duration_ticks": 1,
+  "action_effect_error": 0.0,
+  "recurrent_magnitude": 0.36427294182720277,
+  "most_salient_source": "sun"
 }
